@@ -1,54 +1,47 @@
-# UBUNTU 24.04 VERSION 1
+ubuntu-desktop:
+  install-modes: minimal
+
+# Coletar informações interativas (early-commands)
+early-commands:
+    - |
+      # Solicitar nome de usuário
+      read -p "Digite o nome de usuário: " USERNAME
+      # Solicitar hostname
+      read -p "Digite o hostname: " HOSTNAME
+      # Solicitar senha
+      read -s -p "Digite a senha: " PASSWORD
+      echo  # Nova linha após a senha
+      # Salvar as variáveis para uso posterior
+      echo "username: $USERNAME" > /autoinstall-user-input.yaml
+      echo "hostname: $HOSTNAME" >> /autoinstall-user-input.yaml
+      echo "password: $PASSWORD" >> /autoinstall-user-input.yaml
+
+# Incluir as variáveis coletadas no autoinstall
 autoinstall:
-  version: 1
   identity:
-    hostname: "ubuntu-host"  # Será solicitado ao usuário
-    realname: "Usuário"
-    username: "user"  # Será solicitado ao usuário
-    password: ""  # Será solicitado ao usuário
+    hostname: $(cat /autoinstall-user-input.yaml | grep hostname | cut -d' ' -f2)
+    username: $(cat /autoinstall-user-input.yaml | grep username | cut -d' ' -f2)
+    password: $(cat /autoinstall-user-input.yaml | grep password | cut -d' ' -f2)
 
-  locale: pt_BR.UTF-8
-  keyboard:
-    layout: br
-    
-  timezone: America/Sao_Paulo
-  
-  storage:
-    layout: lvm
-    encryption:
-      enable: true
-      passphrase: ""  # Será solicitado ao usuário
-
-  # Downloads and runs do script de homologação em segundo plano.
-  # user-data:
-  #   late-commands:
-  #     # Comando para baixar e rodar o script em segundo plano
-  #     - curtin in-target -- sh -c "
-  #         curl -o /tmp/Linux.sh 'https://ticorpfilestorage.blob.core.windows.net/linux-scripts/Linux.sh' &&
-  #         chmod +x /tmp/Linux.sh &&
-  #         nohup sudo /tmp/Linux.sh > /var/log/script_install.log 2>&1 &"
-
-  # Pacotes que são instalados com o sistema de pacotes apt
-  packages:
+packages:
     - git
     - wget
     - curl
     - mdatp
-    
-  codecs:
+
+codecs:
     install: true
 
-  drivers:
+drivers:
     install: true
 
-  updates: all
-
-  runcmd:
+# Script personalizado para instalar o AnyDesk, Google Chrome e VSCode
+runcmd:
     # Instalação do Google Chrome
     - wget -O /tmp/google-chrome-stable_current_amd64.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
     - sudo dpkg -i /tmp/google-chrome-stable_current_amd64.deb
-    - sudo apt-get install -f -y
-    - rm /tmp/google-chrome-stable_current_amd64.deb
+    - sudo apt-get install -f -y  # Corrigir dependências, se necessário
+    - rm /tmp/google-chrome-stable_current_amd64.deb  # Remover o arquivo .deb após a instalação
 
     # Instalação do AnyDesk
     - BLOBURL="https://ticorpfilestorage.blob.core.windows.net/varoa/Linux/Script%20Onboarding/"
@@ -57,11 +50,11 @@ autoinstall:
     - FILEPATH="/tmp/$FILENAME"
     - wget -O "$FILEPATH" "${BLOBURL}${FILENAME}${SASTOKEN}"
     - sudo dpkg -i "$FILEPATH"
-    - sudo apt-get install -f -y
-    - rm "$FILEPATH"
+    - sudo apt-get install -f -y  # Corrigir dependências, se necessário
+    - rm "$FILEPATH"  # Remover o arquivo .deb após a instalação
 
     # Instalação do VSCode via Pacote .deb (recomendado)
     - wget -O /tmp/vscode.deb "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
     - sudo dpkg -i /tmp/vscode.deb
-    - sudo apt-get install -f -y
-    - rm /tmp/vscode.deb
+    - sudo apt-get install -f -y  # Corrigir dependências, se necessário
+    - rm /tmp/vscode.deb  # Remover o arquivo .deb após a instalação
