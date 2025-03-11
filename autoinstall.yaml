@@ -2,25 +2,11 @@
 autoinstall:
   version: 1
 
-  # Coletar informações interativas (early-commands)
-  early-commands:
-    - |
-      # Solicitar nome de usuário
-      read -p "Digite o nome de usuário: " USERNAME
-      # Solicitar hostname
-      read -p "Digite o hostname: " HOSTNAME
-      # Solicitar senha
-      read -s -p "Digite a senha: " PASSWORD
-      echo  # Nova linha após a senha
-      # Salvar as variáveis para uso posterior
-      echo "username: $USERNAME" > /autoinstall-user-input.yaml
-      echo "hostname: $HOSTNAME" >> /autoinstall-user-input.yaml
-      echo "password: $PASSWORD" >> /autoinstall-user-input.yaml
-
+  # Configuração de identidade (usuário e hostname)
   identity:
-    hostname: $(cat /autoinstall-user-input.yaml | grep hostname | cut -d' ' -f2)
-    username: $(cat /autoinstall-user-input.yaml | grep username | cut -d' ' -f2)
-    password: $(cat /autoinstall-user-input.yaml | grep password | cut -d' ' -f2)
+    hostname: "meu-hostname"
+    username: "mutley"
+    password: "$6$saltsalt$UqP6y0yFYZGJH09Pqv91bGcDQ7p2cxRi8Uz7A0z1yShyX7YFJjBPy6euXh5qgUbqauKIm5oN0xz9e6roFVg8z0"
 
   # Configurações de localização
   locale: pt_BR.UTF-8
@@ -53,14 +39,10 @@ autoinstall:
     - rm /tmp/google-chrome-stable_current_amd64.deb  # Remover o arquivo .deb após a instalação
 
     # Instalação do AnyDesk
-    - BLOBURL="https://ticorpfilestorage.blob.core.windows.net/varoa/Linux/Script%20Onboarding/"
-    - FILENAME="AnyDeskClient.deb"
-    - SASTOKEN="?si=Automate&sv=2022-11-02&sr=b&sig=fOYBnODf%2B%2FsAgK7M5KIZ845ot0frkdjUH%2FqjxB%2BdbMc%3D"
-    - FILEPATH="/tmp/$FILENAME"
-    - wget -O "$FILEPATH" "${BLOBURL}${FILENAME}${SASTOKEN}"
-    - sudo dpkg -i "$FILEPATH"
+    - wget -O /tmp/AnyDeskClient.deb "https://ticorpfilestorage.blob.core.windows.net/varoa/Linux/Script%20Onboarding/AnyDeskClient.deb?si=Automate&sv=2022-11-02&sr=b&sig=fOYBnODf%2B%2FsAgK7M5KIZ845ot0frkdjUH%2FqjxB%2BdbMc%3D"
+    - sudo dpkg -i /tmp/AnyDeskClient.deb
     - sudo apt-get install -f -y  # Corrigir dependências, se necessário
-    - rm "$FILEPATH"  # Remover o arquivo .deb após a instalação
+    - rm /tmp/AnyDeskClient.deb  # Remover o arquivo .deb após a instalação
 
     # Instalação do VSCode via Pacote .deb (recomendado)
     - wget -O /tmp/vscode.deb "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
