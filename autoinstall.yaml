@@ -1,16 +1,27 @@
-# Versão do esquema do autoinstall
+# UBUNTU 24.04 VERSION 1
 autoinstall:
   version: 1
 
-  # Modo de instalação mínima do Ubuntu Desktop
-  ubuntu-desktop:
-    install-modes: minimal
+  # Coletar informações interativas (early-commands)
+  early-commands:
+    - |
+      # Solicitar nome de usuário
+      read -p "Digite o nome de usuário: " USERNAME
+      # Solicitar hostname
+      read -p "Digite o hostname: " HOSTNAME
+      # Solicitar senha
+      read -s -p "Digite a senha: " PASSWORD
+      echo  # Nova linha após a senha
+      # Salvar as variáveis para uso posterior
+      echo "username: $USERNAME" > /autoinstall-user-input.yaml
+      echo "hostname: $HOSTNAME" >> /autoinstall-user-input.yaml
+      echo "password: $PASSWORD" >> /autoinstall-user-input.yaml
 
-  # Configurações de identidade
+  # Configuração do usuário e hostname
   identity:
-    hostname: ubuntu-host
-    username: user
-    password: "$6$exemplo$hashedpassword"
+    hostname: $(cat /autoinstall-user-input.yaml | grep hostname | cut -d' ' -f2)
+    username: $(cat /autoinstall-user-input.yaml | grep username | cut -d' ' -f2)
+    password: $(cat /autoinstall-user-input.yaml | grep password | cut -d' ' -f2)
 
   # Configurações de localização e teclado
   locale: pt_BR.UTF-8
@@ -28,6 +39,10 @@ autoinstall:
     encryption:
       enable: true
       passphrase: ""  # Será solicitado ao usuário
+
+  # Instalação mínima do Ubuntu Desktop
+  ubuntu-desktop:
+    install-modes: minimal  # Instalação mínima
 
   # Pacotes que são instalados com o sistema de pacotes apt
   packages:
