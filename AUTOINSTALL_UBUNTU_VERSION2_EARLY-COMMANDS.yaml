@@ -1,0 +1,62 @@
+#UBUNTU 24.04 EARLY COMMANDS FOR CREATE USER, HOSTNAME AND PASSWORD
+# Configuração para instalação mínima do Ubuntu Desktop
+ubuntu-desktop:
+  install-modes: minimal  # Define a instalação como mínima
+
+# Coletar informações interativas (early-commands)
+early-commands:
+    - |
+      # Solicitar nome de usuário
+      read -p "Digite o nome de usuário: " USERNAME
+      # Solicitar hostname
+      read -p "Digite o hostname: " HOSTNAME
+      # Solicitar senha
+      read -s -p "Digite a senha: " PASSWORD
+      echo  # Nova linha após a senha
+      # Salvar as variáveis para uso posterior
+      echo "username: $USERNAME" > /autoinstall-user-input.yaml
+      echo "hostname: $HOSTNAME" >> /autoinstall-user-input.yaml
+      echo "password: $PASSWORD" >> /autoinstall-user-input.yaml
+
+# Incluir as variáveis coletadas no autoinstall
+autoinstall:
+  identity:
+    hostname: $(cat /autoinstall-user-input.yaml | grep hostname | cut -d' ' -f2)
+    username: $(cat /autoinstall-user-input.yaml | grep username | cut -d' ' -f2)
+    password: $(cat /autoinstall-user-input.yaml | grep password | cut -d' ' -f2)
+
+packages:
+    - git
+    - wget
+    - curl
+    - mdatp
+
+codecs:
+    install: true
+
+drivers:
+    install: true
+
+# Script personalizado para instalar o AnyDesk, Google Chrome e VSCode
+runcmd:
+    # Instalação do Google Chrome
+    - wget -O /tmp/google-chrome-stable_current_amd64.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+    - sudo dpkg -i /tmp/google-chrome-stable_current_amd64.deb
+    - sudo apt-get install -f -y  # Corrigir dependências, se necessário
+    - rm /tmp/google-chrome-stable_current_amd64.deb  # Remover o arquivo .deb após a instalação
+
+    # Instalação do AnyDesk
+    - BLOBURL="https://ticorpfilestorage.blob.core.windows.net/varoa/Linux/Script%20Onboarding/"
+    - FILENAME="AnyDeskClient.deb"
+    - SASTOKEN="?si=Automate&sv=2022-11-02&sr=b&sig=fOYBnODf%2B%2FsAgK7M5KIZ845ot0frkdjUH%2FqjxB%2BdbMc%3D"
+    - FILEPATH="/tmp/$FILENAME"
+    - wget -O "$FILEPATH" "${BLOBURL}${FILENAME}${SASTOKEN}"
+    - sudo dpkg -i "$FILEPATH"
+    - sudo apt-get install -f -y  # Corrigir dependências, se necessário
+    - rm "$FILEPATH"  # Remover o arquivo .deb após a instalação
+
+    # Instalação do VSCode via Pacote .deb (recomendado)
+    - wget -O /tmp/vscode.deb "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
+    - sudo dpkg -i /tmp/vscode.deb
+    - sudo apt-get install -f -y  # Corrigir dependências, se necessário
+    - rm /tmp/vscode.deb  # Remover o arquivo .deb após a instalação
