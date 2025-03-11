@@ -17,7 +17,6 @@ autoinstall:
       echo "hostname: $HOSTNAME" >> /autoinstall-user-input.yaml
       echo "password: $PASSWORD" >> /autoinstall-user-input.yaml
 
-  # Configuração do usuário e hostname
   identity:
     hostname: $(cat /autoinstall-user-input.yaml | grep hostname | cut -d' ' -f2)
     username: $(cat /autoinstall-user-input.yaml | grep username | cut -d' ' -f2)
@@ -28,13 +27,6 @@ autoinstall:
 
   # Configuração de fuso horário
   timezone: America/Sao_Paulo
-
-  # Configuração de armazenamento
-  #storage:
-  #  layout: lvm
-  #  encryption:
-  #    enable: true
-  #    passphrase: ""  # Será solicitado ao usuário
 
   # Pacotes que são instalados com o sistema de pacotes apt
   packages:
