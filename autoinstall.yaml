@@ -1,3 +1,5 @@
+#cloud-config
+
 #UBUNTU 24.04 VERSION 1
 # Define teclado, fuso horário, hostname, usuário, e instala pacotes
 
