@@ -21,12 +21,14 @@ autoinstall:
   identity:
     hostname: $(cat /autoinstall-user-input.yaml | grep hostname | cut -d' ' -f2)
     username: $(cat /autoinstall-user-input.yaml | grep username | cut -d' ' -f2)
-    password: $(cat /autoinstall-user-input.yaml | grep password | cut -d' ' -f2)
+    password: "$6$exemplo$hashedpassword"  # Substitua pelo hash da senha
 
   # Configurações de localização e teclado
   locale: pt_BR.UTF-8
   keyboard:
+    model: pc105
     layout: br
+    variant: abnt2
 
   # Configuração de fuso horário
   timezone: America/Sao_Paulo
@@ -37,10 +39,6 @@ autoinstall:
     encryption:
       enable: true
       passphrase: ""  # Será solicitado ao usuário
-
-  # Instalação mínima do Ubuntu Desktop
-  ubuntu-desktop:
-    install-modes: minimal  # Instalação mínima
 
   # Pacotes que são instalados com o sistema de pacotes apt
   packages:
