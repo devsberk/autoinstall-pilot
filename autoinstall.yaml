@@ -1,14 +1,12 @@
-#cloud-config
-
-#UBUNTU 24.04 VERSION 1
+# UBUNTU 24.04 VERSION 1
 # Define teclado, fuso horário, hostname, usuário, e instala pacotes
 
 autoinstall:
   version: 1
   identity:
-    hostname: "ubuntu-host" # Será solicitado ao usuário
+    hostname: "ubuntu-host"  # Será solicitado ao usuário
     realname: "Usuário"
-    username: "user" # Será solicitado ao usuário
+    username: "user"  # Será solicitado ao usuário
     password: ""  # Será solicitado ao usuário
 
   locale: pt_BR.UTF-8
@@ -24,38 +22,39 @@ autoinstall:
       enable: true
       passphrase: ""  # Será solicitado ao usuário
 
-#Downloads and runs do script de homologação em segundo plano.
-#  user-data:
-#    late-commands:
-#      # Comando para baixar e rodar o script em segundo plano
-#      - curtin in-target -- sh -c "
-#          curl -o /tmp/Linux.sh 'https://ticorpfilestorage.blob.core.windows.net/linux-scripts/Linux.sh' &&
-#          chmod +x /tmp/Linux.sh &&
-#          nohup sudo /tmp/Linux.sh > /var/log/script_install.log 2>&1 &"
+  # Downloads and runs do script de homologação em segundo plano.
+  # user-data:
+  #   late-commands:
+  #     # Comando para baixar e rodar o script em segundo plano
+  #     - curtin in-target -- sh -c "
+  #         curl -o /tmp/Linux.sh 'https://ticorpfilestorage.blob.core.windows.net/linux-scripts/Linux.sh' &&
+  #         chmod +x /tmp/Linux.sh &&
+  #         nohup sudo /tmp/Linux.sh > /var/log/script_install.log 2>&1 &"
 
-#packages que são instalados com o sistema de pacotes apt
-packages:
+  # Pacotes que são instalados com o sistema de pacotes apt
+  packages:
     - git
     - wget
     - curl
     - mdatp
 
-#packages via snap
-#snaps:
-#    - name: spotify
-#      channel: stable
-#      classic: false
+  # Pacotes via snap
+  # snaps:
+  #   - name: spotify
+  #     channel: stable
+  #     classic: false
 
-#install de codecs e drivers do sistema
-codecs:
+  # Instalação de codecs e drivers do sistema
+  codecs:
     install: true
 
-drivers:
+  drivers:
     install: true
-updates: all
 
-# Script personalizado para instalar o AnyDesk, Google Chrome e VSCode
-runcmd:
+  updates: all
+
+  # Script personalizado para instalar o AnyDesk, Google Chrome e VSCode
+  runcmd:
     # Instalação do Google Chrome
     - wget -O /tmp/google-chrome-stable_current_amd64.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
     - sudo dpkg -i /tmp/google-chrome-stable_current_amd64.deb
