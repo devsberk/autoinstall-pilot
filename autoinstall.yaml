@@ -1,6 +1,4 @@
 # UBUNTU 24.04 VERSION 1
-# Define teclado, fuso horário, hostname, usuário, e instala pacotes
-
 autoinstall:
   version: 1
   identity:
@@ -12,10 +10,9 @@ autoinstall:
   locale: pt_BR.UTF-8
   keyboard:
     layout: br
-    variant: abnt2
-
+    
   timezone: America/Sao_Paulo
-
+  
   storage:
     layout: lvm
     encryption:
@@ -37,14 +34,7 @@ autoinstall:
     - wget
     - curl
     - mdatp
-
-  # Pacotes via snap
-  # snaps:
-  #   - name: spotify
-  #     channel: stable
-  #     classic: false
-
-  # Instalação de codecs e drivers do sistema
+    
   codecs:
     install: true
 
@@ -53,13 +43,12 @@ autoinstall:
 
   updates: all
 
-  # Script personalizado para instalar o AnyDesk, Google Chrome e VSCode
   runcmd:
     # Instalação do Google Chrome
     - wget -O /tmp/google-chrome-stable_current_amd64.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
     - sudo dpkg -i /tmp/google-chrome-stable_current_amd64.deb
-    - sudo apt-get install -f -y  # Corrigir dependências, se necessário
-    - rm /tmp/google-chrome-stable_current_amd64.deb  # Remover o arquivo .deb após a instalação
+    - sudo apt-get install -f -y
+    - rm /tmp/google-chrome-stable_current_amd64.deb
 
     # Instalação do AnyDesk
     - BLOBURL="https://ticorpfilestorage.blob.core.windows.net/varoa/Linux/Script%20Onboarding/"
@@ -68,11 +57,11 @@ autoinstall:
     - FILEPATH="/tmp/$FILENAME"
     - wget -O "$FILEPATH" "${BLOBURL}${FILENAME}${SASTOKEN}"
     - sudo dpkg -i "$FILEPATH"
-    - sudo apt-get install -f -y  # Corrigir dependências, se necessário
-    - rm "$FILEPATH"  # Remover o arquivo .deb após a instalação
+    - sudo apt-get install -f -y
+    - rm "$FILEPATH"
 
     # Instalação do VSCode via Pacote .deb (recomendado)
     - wget -O /tmp/vscode.deb "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
     - sudo dpkg -i /tmp/vscode.deb
-    - sudo apt-get install -f -y  # Corrigir dependências, se necessário
-    - rm /tmp/vscode.deb  # Remover o arquivo .deb após a instalação
+    - sudo apt-get install -f -y
+    - rm /tmp/vscode.deb
