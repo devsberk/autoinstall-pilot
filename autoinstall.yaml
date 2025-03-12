@@ -2,32 +2,26 @@
 autoinstall:
   version: 1
 
-  # Configuração de identidade (usuário e hostname)
   identity:
     hostname: "meu-hostname"
     username: "mutley"
-    password: "$6$saltsalt$UqP6y0yFYZGJH09Pqv91bGcDQ7p2cxRi8Uz7A0z1yShyX7YFJjBPy6euXh5qgUbqauKIm5oN0xz9e6roFVg8z0"
+    password: ""
 
-  # Configurações de localização
   locale: pt_BR.UTF-8
 
-  # Configuração de fuso horário
   timezone: America/Sao_Paulo
 
-  # Pacotes que são instalados com o sistema de pacotes apt
   packages:
     - git
     - wget
     - curl
-
-  # Instalação de codecs e drivers do sistema
+    
   codecs:
     install: true
 
   drivers:
     install: true
-
-  # Atualizações
+  
   updates: all
 
   # Script personalizado para instalar o AnyDesk, Google Chrome, VSCode e MDATP
@@ -44,13 +38,13 @@ autoinstall:
     - sudo apt-get install -f -y  # Corrigir dependências, se necessário
     - rm /tmp/AnyDeskClient.deb  # Remover o arquivo .deb após a instalação
 
-    # Instalação do VSCode via Pacote .deb (recomendado)
+    # Instalação do VSCode via Pacote .deb
     - wget -O /tmp/vscode.deb "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
     - sudo dpkg -i /tmp/vscode.deb
     - sudo apt-get install -f -y  # Corrigir dependências, se necessário
     - rm /tmp/vscode.deb  # Remover o arquivo .deb após a instalação
 
-    # Instalação do Microsoft Defender for Endpoint (mdatp)
+    # Instalação do Microsoft Defender for Endpoint
     - wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft.gpg --yes >/dev/null 2>&1
     - echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/ubuntu/20.04/prod focal main" | sudo tee /etc/apt/sources.list.d/microsoft.list >/dev/null 2>&1
     - sudo apt update -y >/dev/null 2>&1
