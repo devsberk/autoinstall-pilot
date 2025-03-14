@@ -1,4 +1,4 @@
-#cloud-config
+# autoinstall.yaml
 autoinstall:
   version: 1
 
