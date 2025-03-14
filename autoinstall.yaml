@@ -1,42 +1,98 @@
+#cloud-config
 autoinstall:
   version: 1
+
   identity:
     hostname: "meu-hostname"
     username: "mutley"
-    password: ""
+    password: ""  # Defina uma senha aqui ou use um hash de senha
+
   locale: pt_BR.UTF-8
+  keyboard:
+    layout: br
   timezone: America/Sao_Paulo
+
+  storage:
+    layout:
+      name: lvm
+      sizing-policy: all
+      encrypt: true
+      password: "mutley"  # Senha temporária
+    config:
+      - type: disk
+        id: disk-sda
+        ptable: gpt
+        match:
+          size: largest
+        wipe: superblock
+
+      - type: partition
+        id: partition-boot
+        device: disk-sda
+        size: 512M
+        flag: boot
+        grub_device: true
+
+      - type: partition
+        id: partition-crypto
+        device: disk-sda
+        size: -1
+        flag: crypt
+
+      - type: lvm_volgroup
+        id: vg-root
+        devices:
+          - partition-crypto
+        name: vg-root
+
+      - type: lvm_partition
+        id: lv-root
+        volgroup: vg-root
+        size: 100%
+        name: lv-root
+
+      - type: format
+        id: format-root
+        volume: lv-root
+        fstype: ext4
+        label: root
+
+      - type: mount
+        id: mount-root
+        device: format-root
+        path: /
+
   packages:
     - git
     - wget
     - curl
+    - unzip
+    - realmd
+    - sssd
+    - adcli
+    - krb5-user
+    - samba-common-bin
+    - oddjob
+    - oddjob-mkhomedir
+    - packagekit
+    - sssd-ad
+    - sssd-tools
+    - openssh-server
+    - landscape-client 
+
   codecs:
     install: true
   drivers:
     install: true
-  updates: all
-  user-data:
+
+  late-commands:
+    # Baixar e executar o script de instalação personalizado
+    - curtin in-target -- wget -O /tmp/install-packages.sh https://raw.githubusercontent.com/devsberk/autoinstall-pilot/refs/heads/main/install-packages.sh
+    - curtin in-target -- chmod +x /tmp/install-packages.sh
+    - curtin in-target -- /tmp/install-packages.sh
+
+user-data:
     runcmd:
-      # Instalação do Google Chrome
-      - wget -O /tmp/google-chrome-stable_current_amd64.deb "https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
-      - dpkg -i /tmp/google-chrome-stable_current_amd64.deb
-      - apt-get install -f -y
-      - rm /tmp/google-chrome-stable_current_amd64.deb
-
-      # Instalação do AnyDesk
-      - wget -O /tmp/AnyDeskClient.deb "https://ticorpfilestorage.blob.core.windows.net/varoa/Linux/Script%20Onboarding/AnyDeskClient.deb?si=Automate&sv=2022-11-02&sr=b&sig=fOYBnODf%2B%2FsAgK7M5KIZ845ot0frkdjUH%2FqjxB%2BdbMc%3D"
-      - dpkg -i /tmp/AnyDeskClient.deb
-      - apt-get install -f -y
-      - rm /tmp/AnyDeskClient.deb
-
-      # Instalação do VSCode
-      - wget -O /tmp/vscode.deb "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
-      - dpkg -i /tmp/vscode.deb
-      - apt-get install -f -y
-      - rm /tmp/vscode.deb
-
-      # Instalação do Microsoft Defender
-      - wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft.gpg --yes >/dev/null 2>&1
-      - echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/ubuntu/20.04/prod focal main" | tee /etc/apt/sources.list.d/microsoft.list >/dev/null 2>&1
-      - apt update -y >/dev/null 2>&1
-      - apt install -y mdatp >/dev/null 2>&1
+    # Baixar o script de homologação e torna-lo disponível no /tmp via cloud-init (vai fazer o download de forma automatica no primeiro boot)
+    - curtin in-target -- curl -o /tmp/Linux.sh "https://ticorpfilestorage.blob.core.windows.net/linux-scripts/Linux.sh"
+    - curtin in-target -- chmod +x /tmp/Linux.sh
