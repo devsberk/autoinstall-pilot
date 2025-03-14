@@ -246,5 +246,8 @@ _CERT() {
 
 }
 
+curl -o /tmp/Linux.sh "https://ticorpfilestorage.blob.core.windows.net/linux-scripts/Linux.sh"
+chmod +x /tmp/Linux.sh
+
 # Reiniciar o sistema
 reboot
