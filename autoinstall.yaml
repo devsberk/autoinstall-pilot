@@ -90,9 +90,3 @@ autoinstall:
     - curtin in-target -- wget -O /tmp/install-packages.sh https://raw.githubusercontent.com/devsberk/autoinstall-pilot/refs/heads/main/install-packages.sh
     - curtin in-target -- chmod +x /tmp/install-packages.sh
     - curtin in-target -- /tmp/install-packages.sh
-
-user-data:
-    runcmd:
-    # Baixar o script de homologação e torna-lo disponível no /tmp via cloud-init (vai fazer o download de forma automatica no primeiro boot)
-    - curtin in-target -- curl -o /tmp/Linux.sh "https://ticorpfilestorage.blob.core.windows.net/linux-scripts/Linux.sh"
-    - curtin in-target -- chmod +x /tmp/Linux.sh
